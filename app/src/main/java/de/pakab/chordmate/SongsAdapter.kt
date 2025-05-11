@@ -7,9 +7,11 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 class SongsAdapter(
-    private val songList: List<Song>,
+    private val db: AppDatabase,
     private val onClickListener: OnClickListener,
 ) : RecyclerView.Adapter<SongsAdapter.ViewHolder>() {
+    private val songList: MutableList<Song> = ArrayList<Song>()
+
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int,
