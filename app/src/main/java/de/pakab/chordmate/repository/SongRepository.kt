@@ -1,6 +1,8 @@
-package de.pakab.chordmate
+package de.pakab.chordmate.repository
 
 import androidx.lifecycle.LiveData
+import de.pakab.chordmate.SongDao
+import de.pakab.chordmate.model.Song
 
 class SongRepository(
     private val songDao: SongDao,

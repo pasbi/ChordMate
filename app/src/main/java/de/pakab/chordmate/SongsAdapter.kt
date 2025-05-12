@@ -5,12 +5,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import de.pakab.chordmate.model.Song
 
 class SongsAdapter(
-    private val db: AppDatabase,
     private val onClickListener: OnClickListener,
 ) : RecyclerView.Adapter<SongsAdapter.ViewHolder>() {
-    private val songList: MutableList<Song> = ArrayList<Song>()
+    private var songList = emptyList<Song>()
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -25,7 +25,8 @@ class SongsAdapter(
         position: Int,
     ) {
         val song = songList[position]
-        holder.textView.text = song.title
+        holder.itemView.findViewById<TextView>(R.id.tv_title).text = song.title
+        holder.itemView.findViewById<TextView>(R.id.tv_interpret).text = song.interpret
         holder.itemView.setOnClickListener { l ->
             onClickListener.onClick(song)
         }
@@ -35,11 +36,14 @@ class SongsAdapter(
 
     class ViewHolder(
         view: View,
-    ) : RecyclerView.ViewHolder(view) {
-        val textView: TextView = itemView.findViewById(R.id.textView)
-    }
+    ) : RecyclerView.ViewHolder(view)
 
     abstract class OnClickListener {
         abstract fun onClick(song: Song)
+    }
+
+    fun setData(songs: List<Song>) {
+        this.songList = songs
+        notifyDataSetChanged()
     }
 }
