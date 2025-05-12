@@ -2,8 +2,13 @@ package de.pakab.chordmate.fragments.list
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -44,6 +49,25 @@ class ListFragment : Fragment() {
         mSongsViewModel = ViewModelProvider(this)[SongViewModel::class.java]
         mSongsViewModel.readAllData.observe(viewLifecycleOwner, Observer { songs -> adapter.setData(songs) })
 
+        requireActivity().addMenuProvider(
+            object : MenuProvider {
+                override fun onCreateMenu(
+                    menu: Menu,
+                    menuInflater: MenuInflater,
+                ) {
+                    menu.clear()
+                    menuInflater.inflate(R.menu.menu_main, menu)
+                }
+
+                override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                    if (menuItem.itemId == R.id.action_settings) {
+                        Toast.makeText(requireContext(), "Settings!", Toast.LENGTH_SHORT).show()
+                        return true
+                    }
+                    return false
+                }
+            },
+        )
         return view
     }
 

@@ -7,38 +7,39 @@
     <fragment
         android:id="@+id/listFragment"
         android:name="de.pakab.chordmate.fragments.list.ListFragment"
-        android:label="fragment_list"
-        tools:layout="@layout/fragment_list" >
+        android:label="ChordMate"
+        tools:layout="@layout/fragment_list">
         <action
             android:id="@+id/action_listFragment_to_addFragment"
             app:destination="@id/addFragment"
-            app:enterAnim="@android:anim/cycle_interpolator" />
+            app:enterAnim="@android:anim/slide_in_left" />
         <action
             android:id="@+id/action_listFragment_to_songFragment"
             app:destination="@id/songFragment"
-            app:enterAnim="@android:anim/slide_in_left" />
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right" />
     </fragment>
     <fragment
         android:id="@+id/addFragment"
         android:name="de.pakab.chordmate.fragments.add.AddFragment"
-        android:label="fragment_add"
-        tools:layout="@layout/fragment_add" >
+        android:label="Add Song"
+        tools:layout="@layout/fragment_add">
         <action
             android:id="@+id/action_addFragment_to_songFragment"
-            app:destination="@id/songFragment" />
+            app:destination="@id/songFragment"
+            app:enterAnim="@android:anim/slide_in_left" />
     </fragment>
     <fragment
         android:id="@+id/songFragment"
         android:name="de.pakab.chordmate.fragments.SongFragment"
-        android:label="fragment_song"
-        tools:layout="@layout/fragment_song" >
-        <action
-            android:id="@+id/action_songFragment_to_listFragment"
-            app:destination="@id/listFragment"
-            app:enterAnim="@android:anim/slide_out_right"
-            app:exitAnim="@android:anim/slide_out_right" />
+        android:label="Song"
+        tools:layout="@layout/fragment_song">
         <argument
             android:name="currentSong"
             app:argType="de.pakab.chordmate.model.Song" />
+        <action
+            android:id="@+id/action_songFragment_to_listFragment"
+            app:destination="@id/listFragment"
+            app:enterAnim="@android:anim/fade_in" />
     </fragment>
 </navigation>

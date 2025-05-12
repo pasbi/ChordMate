@@ -27,4 +27,10 @@ class SongViewModel(
             repository.addSong(song)
         }
     }
+
+    fun deleteSong(song: Song) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.deleteSong(song)
+        }
+    }
 }
