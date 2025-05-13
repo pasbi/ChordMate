@@ -12,4 +12,5 @@ data class Song(
     @PrimaryKey(autoGenerate = true) val id: Int,
     @ColumnInfo(name = "title") val title: String?,
     @ColumnInfo(name = "interpret") val interpret: String?,
+//    @ColumnInfo(name = "content") val content: String?,
 ) : Parcelable

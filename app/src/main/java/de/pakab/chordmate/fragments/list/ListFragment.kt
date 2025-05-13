@@ -33,7 +33,8 @@ class ListFragment : Fragment() {
         _binding = FragmentListBinding.inflate(inflater, container, false)
         val view = binding.root
         _binding!!.fabAdd.setOnClickListener {
-            findNavController().navigate(R.id.action_listFragment_to_addFragment)
+            val action = ListFragmentDirections.actionListFragmentToAddFragment(null)
+            findNavController().navigate(action)
         }
         val adapter =
             SongsAdapter(

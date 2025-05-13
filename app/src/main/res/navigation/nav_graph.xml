@@ -15,9 +15,7 @@
             app:enterAnim="@android:anim/slide_in_left" />
         <action
             android:id="@+id/action_listFragment_to_songFragment"
-            app:destination="@id/songFragment"
-            app:enterAnim="@android:anim/slide_in_left"
-            app:exitAnim="@android:anim/slide_out_right" />
+            app:destination="@id/songFragment" />
     </fragment>
     <fragment
         android:id="@+id/addFragment"
@@ -28,6 +26,11 @@
             android:id="@+id/action_addFragment_to_songFragment"
             app:destination="@id/songFragment"
             app:enterAnim="@android:anim/slide_in_left" />
+        <argument
+            android:name="currentSong"
+            app:argType="de.pakab.chordmate.model.Song"
+            app:nullable="true"
+            android:defaultValue="@null" />
     </fragment>
     <fragment
         android:id="@+id/songFragment"

@@ -6,7 +6,14 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import de.pakab.chordmate.model.Song
 
-@Database(entities = [Song::class], version = 1, exportSchema = false)
+@Database(
+    entities = [Song::class],
+    version = 1,
+    exportSchema = true,
+//    autoMigrations = [
+//        AutoMigration(from = 1, to = 2),
+//    ],
+)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun songDao(): SongDao
 
