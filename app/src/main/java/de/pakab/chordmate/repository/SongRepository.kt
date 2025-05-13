@@ -16,4 +16,8 @@ class SongRepository(
     suspend fun deleteSong(song: Song) {
         songDao.deleteSong(song)
     }
+
+    suspend fun updateSong(song: Song) {
+        songDao.updateSong(song)
+    }
 }

@@ -33,4 +33,10 @@ class SongViewModel(
             repository.deleteSong(song)
         }
     }
+
+    fun updateSong(song: Song) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.updateSong(song)
+        }
+    }
 }

@@ -7,7 +7,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
@@ -35,6 +34,7 @@ class SongFragment : Fragment() {
         val view = binding.root
         val toolbar = (activity as AppCompatActivity).supportActionBar!!
         toolbar.title = "${args.currentSong.title} – ${args.currentSong.interpret}"
+        _binding!!.tvSongContent.text = args.currentSong.content
         requireActivity().addMenuProvider(
             object : MenuProvider {
                 override fun onCreateMenu(
@@ -59,7 +59,9 @@ class SongFragment : Fragment() {
                             true
                         }
                         R.id.action_edit_song -> {
-                            Toast.makeText(requireContext(), "edit", Toast.LENGTH_SHORT).show()
+                            findNavController().navigate(
+                                SongFragmentDirections.actionSongFragmentToAddFragment(currentSong = args.currentSong!!),
+                            )
                             true
                         }
                         else -> false

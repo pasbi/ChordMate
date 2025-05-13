@@ -1,6 +1,7 @@
 package de.pakab.chordmate.fragments.add
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -34,7 +35,7 @@ class AddFragment : Fragment() {
         if (args.currentSong != null) {
             _binding!!.etTitle.setText(args.currentSong!!.title)
             _binding!!.etInterpret.setText(args.currentSong!!.interpret)
-//            _binding!!.etContent.setText(args.currentSong.content)
+            _binding!!.etContent.setText(args.currentSong!!.content)
         }
 
         mSongViewModel = ViewModelProvider(this)[SongViewModel::class.java]
@@ -50,8 +51,7 @@ class AddFragment : Fragment() {
 
     private fun insertDataToDatabase() {
         val title = _binding!!.etTitle.text.toString()
-        val currentSong = Song(0, title, _binding!!.etInterpret!!.text.toString())
-//        val currentSong = Song(0, title, _binding!!.etInterpret!!.text.toString(), _binding!!.etContent!!.text.toString())
+        val currentSong = Song(0, title, _binding!!.etInterpret!!.text.toString(), _binding!!.etContent!!.text.toString())
         mSongViewModel.addSong(currentSong)
         Toast.makeText(requireContext(), "Added Song $title to database.", Toast.LENGTH_LONG).show()
 
@@ -60,5 +60,12 @@ class AddFragment : Fragment() {
     }
 
     private fun updateCurrentSong() {
+        args.currentSong!!.title = _binding!!.etTitle.text.toString()
+        args.currentSong!!.interpret = _binding!!.etInterpret.text.toString()
+        args.currentSong!!.content = _binding!!.etContent.text.toString()
+        mSongViewModel.updateSong(args.currentSong!!)
+        Log.v("FOO", "update song: ${args.currentSong!!.id}")
+        val action = AddFragmentDirections.actionAddFragmentToSongFragment(args.currentSong!!)
+        findNavController().navigate(action, navOptions { popUpTo(R.id.songFragment) })
     }
 }

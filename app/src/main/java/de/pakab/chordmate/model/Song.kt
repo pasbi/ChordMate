@@ -10,7 +10,7 @@ import kotlinx.parcelize.Parcelize
 @Entity(tableName = "songs")
 data class Song(
     @PrimaryKey(autoGenerate = true) val id: Int,
-    @ColumnInfo(name = "title") val title: String?,
-    @ColumnInfo(name = "interpret") val interpret: String?,
-//    @ColumnInfo(name = "content") val content: String?,
+    @ColumnInfo(name = "title") var title: String?,
+    @ColumnInfo(name = "interpret") var interpret: String?,
+    @ColumnInfo(name = "content") var content: String?,
 ) : Parcelable

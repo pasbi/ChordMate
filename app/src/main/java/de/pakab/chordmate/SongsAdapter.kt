@@ -1,5 +1,6 @@
 package de.pakab.chordmate
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,6 +26,7 @@ class SongsAdapter(
         position: Int,
     ) {
         val song = songList[position]
+        holder.itemView.findViewById<TextView>(R.id.tv_id).text = "${song.id}"
         holder.itemView.findViewById<TextView>(R.id.tv_title).text = song.title
         holder.itemView.findViewById<TextView>(R.id.tv_interpret).text = song.interpret
         holder.itemView.setOnClickListener { l ->
@@ -43,6 +45,7 @@ class SongsAdapter(
     }
 
     fun setData(songs: List<Song>) {
+        Log.v("FOO", "set songs: ${songs.size}")
         this.songList = songs
         notifyDataSetChanged()
     }

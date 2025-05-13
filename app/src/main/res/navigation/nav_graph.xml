@@ -44,5 +44,8 @@
             android:id="@+id/action_songFragment_to_listFragment"
             app:destination="@id/listFragment"
             app:enterAnim="@android:anim/fade_in" />
+        <action
+            android:id="@+id/action_songFragment_to_addFragment"
+            app:destination="@id/addFragment" />
     </fragment>
 </navigation>
