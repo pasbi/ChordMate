@@ -20,11 +20,49 @@ import de.pakab.chordmate.databinding.FragmentSongBinding
 import de.pakab.chordmate.renderChordPro
 import de.pakab.chordmate.viewmodel.SongViewModel
 
+class SongFragmentMenuProvider(
+    val fragment: SongFragment,
+) : MenuProvider {
+    override fun onCreateMenu(
+        menu: Menu,
+        menuInflater: MenuInflater,
+    ) {
+        menu.clear()
+        menuInflater.inflate(R.menu.menu_song, menu)
+    }
+
+    override fun onMenuItemSelected(menuItem: MenuItem): Boolean =
+        when (menuItem.itemId) {
+            R.id.action_delete_song -> {
+                fragment.showDeleteSongDialog()
+                true
+            }
+            R.id.action_edit_song -> {
+                fragment.findNavController().navigate(
+                    SongFragmentDirections.actionSongFragmentToAddFragment(currentSong = fragment.args.currentSong!!),
+                )
+                true
+            }
+            else -> false
+        }
+}
+
 class SongFragment : Fragment() {
     private var _binding: FragmentSongBinding? = null
-    public val binding get() = _binding!!
+    val binding get() = _binding!!
 
     val args: SongFragmentArgs by navArgs()
+
+    fun showDeleteSongDialog() {
+        AlertDialog
+            .Builder(
+                requireContext(),
+            ).setTitle("Delete ${args.currentSong.title} – ${args.currentSong.interpret}?")
+            .setPositiveButton("Delete") { dialog, which -> deleteCurrentSong() }
+            .setNegativeButton("Cancel") { dialog, which -> null }
+            .create()
+            .show()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,41 +74,7 @@ class SongFragment : Fragment() {
         val toolbar = (activity as AppCompatActivity).supportActionBar!!
         toolbar.title = "${args.currentSong.title} – ${args.currentSong.interpret}"
         _binding!!.tvSongContent.text = renderChordPro(args.currentSong.content)
-        requireActivity().addMenuProvider(
-            object : MenuProvider {
-                override fun onCreateMenu(
-                    menu: Menu,
-                    menuInflater: MenuInflater,
-                ) {
-                    menu.clear()
-                    menuInflater.inflate(R.menu.menu_song, menu)
-                }
-
-                override fun onMenuItemSelected(menuItem: MenuItem): Boolean =
-                    when (menuItem.itemId) {
-                        R.id.action_delete_song -> {
-                            AlertDialog
-                                .Builder(
-                                    requireContext(),
-                                ).setTitle("Delete ${args.currentSong.title} – ${args.currentSong.interpret}?")
-                                .setPositiveButton("Delete") { dialog, which -> deleteCurrentSong() }
-                                .setNegativeButton("Cancel") { dialog, which -> null }
-                                .create()
-                                .show()
-                            true
-                        }
-                        R.id.action_edit_song -> {
-                            findNavController().navigate(
-                                SongFragmentDirections.actionSongFragmentToAddFragment(currentSong = args.currentSong!!),
-                            )
-                            true
-                        }
-                        else -> false
-                    }
-            },
-            viewLifecycleOwner,
-            Lifecycle.State.RESUMED,
-        )
+        requireActivity().addMenuProvider(SongFragmentMenuProvider(this), viewLifecycleOwner, Lifecycle.State.RESUMED)
         return view
     }
 
