@@ -75,15 +75,24 @@ fun rootValue(text: String): Int? =
         else -> null
     }
 
+fun rootName(root: Int): String = arrayOf("C", "C#", "D", "Eb", "E", "F", "Fis", "G", "Ab", "A", "Bb", "B")[root.mod(12)]
+
 data class Chord(
     val root: Int,
     val suffix: String,
     val upperCase: Boolean,
-)
+) {
+    override fun toString(): String {
+        var root = rootName(root)
+        if (!upperCase) {
+            root = root.lowercase()
+        }
+        return root + suffix
+    }
+}
 
 fun parseChord(text: String): Chord? {
-    println("====\n$text")
-    val options = setOf(RegexOption.IGNORE_CASE)
+    val options = RegexOption.IGNORE_CASE
     val map =
         mapOf<Regex, Int>( // order matters
             Regex("""(^[CDEFGAB])(is|#|♯)""", options) to 1,
@@ -95,10 +104,10 @@ fun parseChord(text: String): Chord? {
         val match = regex.find(text)
         if (match != null) {
             val root = rootValue(match.groupValues[1].uppercase())!! + pitch
-            println("  $root  ${match.groupValues[1].first()}")
             val strippedText = text.replaceRange(match.range, "")
-            println("text = $text, range=${match.range}")
-            return Chord(root.mod(12), strippedText, match.groupValues[1].first().isUpperCase())
+            if (Regex("""(m|5|6|7|7\+|°|sus|sus2|sus4|add2|)*""", options).matches(strippedText)) {
+                return Chord(root.mod(12), strippedText, match.groupValues[1].first().isUpperCase())
+            }
         }
     }
     return null
@@ -110,56 +119,94 @@ class Token(
 ) {
     val chord: Chord? = parseChord(text)
 
-    fun valid() = chord != null
+    fun isChord() = chord != null
 
-    fun text(): String = "F"
+    fun text(): String {
+        if (chord != null) {
+            return chord.toString()
+        }
+        return text
+    }
+
+    override fun toString(): String {
+        val isChord = if (isChord()) "c" else "nc"
+        return "Token[$text, @$position, $isChord]"
+    }
 }
 
-private fun isChordLine(chords: List<Token>): Boolean = false
+fun isChordLine(tokens: List<Token>): Boolean {
+    val ambiguousWords = setOf("a", "as", "ab", "es")
+    if (tokens.find { it.isChord() && !ambiguousWords.contains(it.text) } != null) {
+        // There is a token which is a chord and not a word.
+        return true
+    }
+    if (tokens.count { it.isChord() } * 2 > tokens.size) {
+        // More than half the tokens are valid chords.
+        return true
+    }
+    return false
+}
+
+fun tokenize(line: String): List<Token> = Regex("""\b\S+\b""").findAll(line).map { Token(it.value, it.range.start) }.toList()
 
 private fun merge(
     chords: List<Token>,
     textLine: String,
 ): String {
-    if (chords.isEmpty()) {
-        return textLine
+    for ((a, b) in chords.zipWithNext()) {
+        assert(a.position < b.position)
     }
-
-    var tokens: MutableList<String> = ArrayList<String>()
-    tokens.add(textLine.substring(0, chords.first().position))
-    for ((chord, nextChord) in chords.zipWithNext()) {
-        tokens.add(textLine.substring(chord.position, nextChord.position))
+    var sb = StringBuilder()
+    sb.append(textLine)
+    sb.append(" ".repeat(max(0, chords.last().position - textLine.length)))
+    var accu = 0
+    for (chord in chords.reversed()) {
+        println("Insert $chord into '$sb'")
+        sb.insert(chord.position, "[${chord.text}]")
+        accu += 1 // chord.text.length
     }
-    tokens.add(textLine.substring(chords.last().position, textLine.length))
-
-    val sb = StringBuilder()
-    for ((token, chord) in (tokens zip chords)) {
-        sb.append(token)
-        sb.append("[${chord.text()}]")
-    }
-    sb.append(tokens.last())
-    return sb.toString()
+    return sb.toString() // .trimEnd()
 }
+
+class TokenizedLine(
+    val tokens: List<Token>,
+    val text: String,
+)
+
+private fun merge(
+    line: TokenizedLine,
+    nextLine: TokenizedLine,
+): Pair<String, Boolean> =
+    if (isChordLine(line.tokens)) {
+        if (isChordLine(nextLine.tokens)) {
+            merge(line.tokens, "") to false // skip next
+        } else {
+            merge(line.tokens, nextLine.text) to true
+        }
+    } else {
+        line.text to false
+    }
 
 fun toChordPro(code: String?): String {
     if (code == null) {
         return ""
     }
-    var lines: MutableList<String> = ArrayList<String>()
+    val lines = code!!.split("\n").map { s -> TokenizedLine(tokenize(s), s) }
     var skip = false
-    for ((line, nextLine) in code!!.split("\n").zipWithNext()) {
+    var resultLines: MutableList<String> = ArrayList<String>()
+    for ((line, nextLine) in lines.zipWithNext()) {
         if (skip) {
             skip = false
             continue
         }
-        val chords = Regex("""(\S+)""").findAll(line).map { matchResult -> Token(matchResult.value, matchResult.range.first) }.toList()
 
-        if (isChordLine(chords)) {
-            skip = true
-            lines.add(merge(chords, nextLine))
-        } else {
-            lines.add(line)
-        }
+        val (result, skipNext) = merge(line, nextLine)
+        skip = skipNext
+        resultLines.add(result)
     }
-    return ""
+    if (!skip && lines.isNotEmpty()) {
+        val (lastLine, _) = merge(lines.last(), TokenizedLine(ArrayList<Token>(), ""))
+        resultLines.add(lastLine)
+    }
+    return resultLines.joinToString("\n")
 }
