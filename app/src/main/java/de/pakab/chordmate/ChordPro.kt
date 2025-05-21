@@ -55,7 +55,7 @@ fun renderChordPro(code: String?): String {
         return ""
     }
     var lines: MutableList<String> = ArrayList<String>()
-    for (line in code!!.split("\n")) {
+    for (line in code.split("\n")) {
         for (renderedLine in renderChordProLine(line)) {
             lines.add(renderedLine)
         }
@@ -97,7 +97,7 @@ fun parseChord(text: String): Chord? {
         mapOf<Regex, Int>( // order matters
             Regex("""(^[CDEFGAB])(is|#|♯)""", options) to 1,
             Regex("""(^[CDFGB])(es|b|♭)""", options) to -1,
-            Regex("""(^[AE])(s|b|♭)""", options) to -1,
+            Regex("""(^[AE])([sb♭])""", options) to -1,
             Regex("""(^[CDEFGAB])""", options) to 0,
         )
     for ((regex, pitch) in map) {
@@ -159,13 +159,10 @@ private fun merge(
     var sb = StringBuilder()
     sb.append(textLine)
     sb.append(" ".repeat(max(0, chords.last().position - textLine.length)))
-    var accu = 0
     for (chord in chords.reversed()) {
-        println("Insert $chord into '$sb'")
         sb.insert(chord.position, "[${chord.text}]")
-        accu += 1 // chord.text.length
     }
-    return sb.toString() // .trimEnd()
+    return sb.toString()
 }
 
 class TokenizedLine(
@@ -191,7 +188,7 @@ fun toChordPro(code: String?): String {
     if (code == null) {
         return ""
     }
-    val lines = code!!.split("\n").map { s -> TokenizedLine(tokenize(s), s) }
+    val lines = code.split("\n").map { s -> TokenizedLine(tokenize(s), s) }
     var skip = false
     var resultLines: MutableList<String> = ArrayList<String>()
     for ((line, nextLine) in lines.zipWithNext()) {

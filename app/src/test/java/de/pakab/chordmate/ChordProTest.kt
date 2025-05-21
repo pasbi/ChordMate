@@ -52,7 +52,6 @@ class DetectChordLineTest(
 
     @Test
     fun detectChordLineTest() {
-        println(tokenize(line))
         Assert.assertEquals(expectedChordLine, isChordLine(tokenize(line)))
     }
 }
