@@ -135,7 +135,7 @@ class Token(
 }
 
 fun isChordLine(tokens: List<Token>): Boolean {
-    val ambiguousWords = setOf("a", "as", "ab", "es")
+    val ambiguousWords = setOf("A", "a", "as", "ab", "es")
     if (tokens.find { it.isChord() && !ambiguousWords.contains(it.text) } != null) {
         // There is a token which is a chord and not a word.
         return true
@@ -147,7 +147,7 @@ fun isChordLine(tokens: List<Token>): Boolean {
     return false
 }
 
-fun tokenize(line: String): List<Token> = Regex("""\b\S+\b""").findAll(line).map { Token(it.value, it.range.start) }.toList()
+fun tokenize(line: String): List<Token> = Regex("""\S+""").findAll(line).map { Token(it.value, it.range.start) }.toList()
 
 private fun merge(
     chords: List<Token>,

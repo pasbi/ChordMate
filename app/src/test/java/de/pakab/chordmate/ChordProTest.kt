@@ -113,6 +113,7 @@ class ToChordPro(
                 arrayOf("foo\nbar", "foo\nbar"),
                 arrayOf("", ""),
                 arrayOf("\n", "\n"),
+                arrayOf("A  F#\n ABC", "[A] AB[F#]C"),
             )
     }
 
