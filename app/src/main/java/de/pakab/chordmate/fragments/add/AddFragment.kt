@@ -9,7 +9,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.text.set
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -20,8 +19,7 @@ import androidx.navigation.navOptions
 import de.pakab.chordmate.R
 import de.pakab.chordmate.databinding.FragmentAddBinding
 import de.pakab.chordmate.model.Song
-import de.pakab.chordmate.renderChordPro
-import de.pakab.chordmate.toChordPro
+import de.pakab.chordmate.transpose
 import de.pakab.chordmate.viewmodel.SongViewModel
 import kotlin.getValue
 
@@ -38,12 +36,12 @@ class AddFragmentMenuProvider(
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean =
         when (menuItem.itemId) {
-            R.id.action_convert_from_chord_pro -> {
-                fragment.setContent(renderChordPro(fragment.content()))
+            R.id.action_transpose_up -> {
+                fragment.setContent(transpose(fragment.content(), 1))
                 true
             }
-            R.id.action_convert_to_chord_pro -> {
-                fragment.setContent(toChordPro(fragment.content()))
+            R.id.action_transpose_down -> {
+                fragment.setContent(transpose(fragment.content(), -1))
                 true
             }
             else -> false

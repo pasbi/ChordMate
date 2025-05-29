@@ -13,4 +13,5 @@ data class Song(
     @ColumnInfo(name = "title") var title: String?,
     @ColumnInfo(name = "interpret") var interpret: String?,
     @ColumnInfo(name = "content") var content: String?,
+    @ColumnInfo(name = "transposing", defaultValue = "0") var transposing: Int = 0,
 ) : Parcelable

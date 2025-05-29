@@ -17,7 +17,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import de.pakab.chordmate.R
 import de.pakab.chordmate.databinding.FragmentSongBinding
-import de.pakab.chordmate.renderChordPro
+import de.pakab.chordmate.transpose
 import de.pakab.chordmate.viewmodel.SongViewModel
 
 class SongFragmentMenuProvider(
@@ -73,7 +73,7 @@ class SongFragment : Fragment() {
         val view = binding.root
         val toolbar = (activity as AppCompatActivity).supportActionBar!!
         toolbar.title = "${args.currentSong.title} – ${args.currentSong.interpret}"
-        _binding!!.tvSongContent.text = renderChordPro(args.currentSong.content)
+        _binding!!.tvSongContent.text = transpose(args.currentSong.content.orEmpty(), args.currentSong.transposing)
         requireActivity().addMenuProvider(SongFragmentMenuProvider(this), viewLifecycleOwner, Lifecycle.State.RESUMED)
         return view
     }

@@ -4,13 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="de.pakab.chordmate.MainActivity">
     <item
-        android:id="@+id/action_convert_to_chord_pro"
+        android:id="@+id/action_transpose_up"
         android:orderInCategory="100"
-        android:title="@string/to_chordpro"
+        android:title="@string/action_transpose_up_text"
         app:showAsAction="never" />
     <item
-        android:id="@+id/action_convert_from_chord_pro"
+        android:id="@+id/action_transpose_down"
         android:orderInCategory="100"
-        android:title="@string/from_chordpro"
+        android:title="@string/action_transpose_down_text"
         app:showAsAction="never" />
 </menu>

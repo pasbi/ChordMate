@@ -6,32 +6,6 @@ import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 
 @RunWith(Parameterized::class)
-class RenderChordProTest(
-    private val pattern: String,
-    private val expectedRender: String,
-) {
-    companion object {
-        @JvmStatic
-        @Parameterized.Parameters()
-        fun get(): Iterable<Array<Any>> =
-            arrayListOf(
-                arrayOf("Foo", "Foo"),
-                arrayOf("[C]Foo", "C\nFoo"),
-                arrayOf(
-                    "[C]abc [Dm7+]x [A]y",
-                    "C   Dm7+ A\n" +
-                        "abc x y",
-                ),
-            )
-    }
-
-    @Test
-    fun renderChordProTest() {
-        Assert.assertEquals(expectedRender, renderChordPro(pattern))
-    }
-}
-
-@RunWith(Parameterized::class)
 class DetectChordLineTest(
     private val line: String,
     private val expectedChordLine: Boolean,
@@ -52,7 +26,7 @@ class DetectChordLineTest(
 
     @Test
     fun detectChordLineTest() {
-        Assert.assertEquals(expectedChordLine, isChordLine(tokenize(line)))
+        Assert.assertEquals(expectedChordLine, isChordLine(line))
     }
 }
 
@@ -84,41 +58,29 @@ class ParseChordTest(
 
     @Test
     fun parseChordTest() {
-        Assert.assertEquals(chord, parseChord(pattern))
+        Assert.assertEquals(chord.toString(), parseChord(pattern, 0..<pattern.length).toString())
     }
 }
 
 @RunWith(Parameterized::class)
-class ToChordPro(
-    private val text: String,
-    private val chordPro: String,
+class TransposeChordTest(
+    private val oldLine: String,
+    private val transposing: Int,
+    private val newLine: String,
 ) {
     companion object {
         @JvmStatic
         @Parameterized.Parameters()
         fun get(): Iterable<Array<Any?>> =
             arrayListOf(
-                arrayOf("C\nX", "[C]X"),
-                arrayOf("C dm7+sus4add2\nX Y", "[C]X [dm7+sus4add2]Y"),
-                arrayOf("C d\nX", "[C]X [d]"),
-                arrayOf("C d     A\nX", "[C]X [d]      [A]"),
-                arrayOf(" C d\nX", "X[C]  [d]"),
-                arrayOf(" C d\nX ABC DEF", "X[C] A[d]BC DEF"),
-                arrayOf("  C\n", "  [C]"),
-                arrayOf("  C", "  [C]"),
-                arrayOf("  C\n  D\n  E", "  [C]\n  [D]\n  [E]"),
-                arrayOf("foo bar\n  C\n  D\n  E", "foo bar\n  [C]\n  [D]\n  [E]"),
-                arrayOf("foo bar\n  C\n  D\n  E\ncaffe", "foo bar\n  [C]\n  [D]\nca[E]ffe"),
-                arrayOf("foo bar", "foo bar"),
-                arrayOf("foo\nbar", "foo\nbar"),
-                arrayOf("", ""),
-                arrayOf("\n", "\n"),
-                arrayOf("A  F#\n ABC", "[A] AB[F#]C"),
+                arrayOf("C", 1, "C#"),
+                arrayOf("C C", 1, "C# C#"),
+                arrayOf("C# C#", -1, "C  C"),
             )
     }
 
     @Test
-    fun toChordProTest() {
-        Assert.assertEquals(chordPro, toChordPro(text))
+    fun parseChordTest() {
+        Assert.assertEquals(newLine, transpose(oldLine, transposing))
     }
 }

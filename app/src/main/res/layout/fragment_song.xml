@@ -24,7 +24,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:typeface="monospace"
-                android:text="@string/lorem_ipsum" />
+                android:text="" />
         </LinearLayout>
     </ScrollView>
 
