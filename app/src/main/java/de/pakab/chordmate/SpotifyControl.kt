@@ -12,6 +12,8 @@ import com.spotify.sdk.android.auth.AuthorizationRequest
 import com.spotify.sdk.android.auth.AuthorizationResponse
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -113,32 +115,64 @@ object SpotifyControl {
                 .addConverterFactory(networkJson.asConverterFactory("application/json".toMediaType()))
                 .build()
         val service = retrofit.create(SpotifyWebApi::class.java)
-        val call =
-            service.getToken(
+        service
+            .getToken(
                 context.getString(R.string.SPOTIFY_CLIENT_ID),
                 BuildConfig.spotifyClientSecret,
-            )
-        call.enqueue(
-            object : Callback<AccessTokenResponse> {
-                override fun onResponse(
-                    call: Call<AccessTokenResponse?>,
-                    response: Response<AccessTokenResponse?>,
-                ) {
-                    Log.i(TAG, "Got Access Token")
-                    response.body()
-                    Log.i(TAG, "response: $response")
-                    Log.i(TAG, "response body: ${response.body()}")
-                    Log.i(TAG, "response body token: ${response.body()?.accessToken}")
-                }
+            ).enqueue(
+                object : Callback<AccessTokenResponse> {
+                    override fun onResponse(
+                        call: Call<AccessTokenResponse?>,
+                        response: Response<AccessTokenResponse?>,
+                    ) {
+                        val accessToken = response.body()?.accessToken!!
+                        Log.i(TAG, "Got Access Token: '$accessToken'")
 
-                override fun onFailure(
-                    call: Call<AccessTokenResponse?>,
-                    t: Throwable,
-                ) {
-                    Log.i(TAG, "Getting Access Token failed")
-                }
-            },
-        )
+                        val retrofit =
+                            Retrofit
+                                .Builder()
+                                .baseUrl("https://api.spotify.com/v1/")
+                                .addConverterFactory(networkJson.asConverterFactory("application/json".toMediaType()))
+                                .client(client)
+                                .build()
+                        val service = retrofit.create(SpotifyWebApi::class.java)
+                        val token = "Bearer $accessToken"
+                        Log.i(TAG, "token: $token")
+                        var query = HashMap<String, String>()
+                        query["query"] = "Hello"
+                        query["type"] = "track"
+                        val call = service.search(token, query)
+                        Log.i(TAG, "Call: ${call.request().headers}")
+                        call.enqueue(
+                            object : Callback<ResponseBody> {
+                                override fun onResponse(
+                                    call: Call<ResponseBody?>,
+                                    responsex: Response<ResponseBody?>,
+                                ) {
+                                    Log.e(
+                                        TAG,
+                                        "Search succeeded: ${response.code()} ${responsex.headers()}, ${responsex.body()?.string()}, ${responsex.errorBody()?.string()}",
+                                    )
+                                }
+
+                                override fun onFailure(
+                                    call: Call<ResponseBody?>,
+                                    t: Throwable,
+                                ) {
+                                    Log.e(TAG, "Search failed.")
+                                }
+                            },
+                        )
+                    }
+
+                    override fun onFailure(
+                        call: Call<AccessTokenResponse?>,
+                        t: Throwable,
+                    ) {
+                        Log.i(TAG, "Getting Access Token failed")
+                    }
+                },
+            )
     }
 
     private fun connected() {

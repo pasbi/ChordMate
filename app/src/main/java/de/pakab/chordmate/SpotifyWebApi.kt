@@ -2,11 +2,15 @@ package de.pakab.chordmate
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
+import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.Headers
 import retrofit2.http.POST
+import retrofit2.http.QueryMap
 
 @Serializable
 class AccessTokenResponse(
@@ -27,4 +31,11 @@ interface SpotifyWebApi {
         @Field("client_secret") clientSecret: String,
         @Field("grant_type") grantType: String = "client_credentials",
     ): Call<AccessTokenResponse>
+
+    @Headers("Content-Type: application/x-www-form-urlencoded")
+    @GET("search")
+    fun search(
+        @Header("Authorization") token: String,
+        @QueryMap query: HashMap<String, String>,
+    ): Call<ResponseBody>
 }
