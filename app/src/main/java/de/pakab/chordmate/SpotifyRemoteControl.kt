@@ -68,7 +68,6 @@ object SpotifyRemoteControl {
                     spotifyAppRemote = appRemote
                     Log.d(TAG, "Connected to Spotify.")
                     Toast.makeText(context, context.getString(R.string.connected_to_spotify), Toast.LENGTH_SHORT).show()
-                    connected()
                 }
 
                 override fun onFailure(throwable: Throwable) {
@@ -83,20 +82,6 @@ object SpotifyRemoteControl {
         spotifyAppRemote?.let {
             it.playerApi.pause()
             SpotifyAppRemote.disconnect(it)
-        }
-    }
-
-    private fun connected() {
-        spotifyAppRemote?.let {
-//            it.playerApi.resume()
-//            // Play a playlist
-//            val playlistURI = "spotify:playlist:37i9dQZF1DX2sUQwD7tbmL"
-//            it.playerApi.play(playlistURI)
-//            // Subscribe to PlayerState
-//            it.playerApi.subscribeToPlayerState().setEventCallback {
-//                val track: Track = it.track
-//                Log.d("MainActivity", track.name + " by " + track.artist.name)
-//            }
         }
     }
 }

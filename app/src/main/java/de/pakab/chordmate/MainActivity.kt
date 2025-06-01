@@ -27,8 +27,6 @@ class MainActivity : AppCompatActivity() {
         val navController = supportFragmentManager.findFragmentById(R.id.fragment)!!.findNavController()
         setupActionBarWithNavController(navController)
         toolbar.setNavigationOnClickListener { navController.popBackStack() }
-
-        SpotifyWebControl.search(this)
     }
 
     override fun onActivityResult(

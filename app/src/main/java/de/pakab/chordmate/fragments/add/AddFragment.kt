@@ -1,6 +1,8 @@
 package de.pakab.chordmate.fragments.add
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
@@ -77,6 +79,36 @@ class AddFragment : Fragment() {
                 updateCurrentSong()
             }
         }
+
+        val spinnerAdapter = SpotifySpinnerAdapter(requireContext())
+        _binding!!.spPlayback.adapter = spinnerAdapter
+        val playbackSearchUpdater =
+            object : TextWatcher {
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int,
+                ) {
+                    // do nothing
+                }
+
+                override fun onTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    before: Int,
+                    count: Int,
+                ) {
+                    // do nothing
+                }
+
+                override fun afterTextChanged(s: Editable?) {
+                    spinnerAdapter.update(_binding!!.etTitle.text.toString(), _binding!!.etInterpret.text.toString())
+                }
+            }
+        _binding!!.etTitle.addTextChangedListener(playbackSearchUpdater)
+        _binding!!.etInterpret.addTextChangedListener(playbackSearchUpdater)
+
         return view
     }
 

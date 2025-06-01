@@ -2,7 +2,6 @@ package de.pakab.chordmate
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
@@ -10,16 +9,61 @@ import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.POST
 import retrofit2.http.QueryMap
+import kotlin.collections.joinToString
 
 @Serializable
 class AccessTokenResponse(
-    @SerialName("access_token")
-    val accessToken: String = "",
-    @SerialName("token_type")
-    val tokenType: String = "",
-    @SerialName("expires_in")
-    val expiresIn: Int = 0,
+    @SerialName("access_token") val accessToken: String,
+    @SerialName("token_type") val tokenType: String,
+    @SerialName("expires_in") val expiresIn: Int,
 )
+
+@Serializable
+class AlbumCover(
+    @SerialName("url") val url: String,
+    @SerialName("height") val height: Int,
+    @SerialName("width") val width: Int,
+)
+
+@Serializable
+class Album(
+    @SerialName("album_type") val albumType: String,
+    @SerialName("id") val id: String,
+    @SerialName("name") val name: String,
+    @SerialName("images") val images: ArrayList<AlbumCover>,
+)
+
+@Serializable
+class SimplifiedArtist(
+    @SerialName("name") val name: String,
+    @SerialName("id") val id: String,
+)
+
+@Serializable
+class Track(
+    @SerialName("album") val album: Album,
+    @SerialName("artists") val artists: ArrayList<SimplifiedArtist>,
+    @SerialName("id") val id: String,
+    @SerialName("is_playable") val isPlayable: Boolean = false,
+    @SerialName("name") val name: String,
+) {
+    override fun toString(): String = "Track[$name by ${artists.map { it.name }.joinToString(", ")}]"
+}
+
+@Serializable
+class Tracks(
+    @SerialName("offset") val offset: Int,
+    @SerialName("limit") val limit: Int,
+    @SerialName("total") val total: Int,
+    @SerialName("items") val items: ArrayList<Track>,
+)
+
+@Serializable
+class SearchResponse(
+    @SerialName("tracks") val tracks: Tracks,
+) {
+    override fun toString(): String = tracks.items.toString()
+}
 
 interface SpotifyWebApi {
     @FormUrlEncoded
@@ -35,5 +79,5 @@ interface SpotifyWebApi {
     @GET("search")
     fun search(
         @QueryMap query: HashMap<String, String>,
-    ): Call<ResponseBody>
+    ): Call<SearchResponse>
 }

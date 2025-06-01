@@ -71,7 +71,8 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.kotlinx.serialization)
     implementation(libs.kotlinx.serialization.json)
-
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
     annotationProcessor(libs.androidx.room.compiler)

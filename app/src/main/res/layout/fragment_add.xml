@@ -21,13 +21,11 @@
 
             <EditText
                 android:id="@+id/et_title"
-                android:layout_width="0dp"
-                android:layout_height="122dp"
-                android:layout_marginTop="44dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="Title"
                 android:inputType="text"
-                android:selectAllOnFocus="true"
                 android:singleLine="true"
                 android:text=""
                 app:layout_constraintEnd_toEndOf="parent"
@@ -39,34 +37,38 @@
                 android:id="@+id/et_interpret"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="162dp"
-                android:layout_marginBottom="1dp"
                 android:ems="10"
                 android:hint="Interpret"
                 android:inputType="text"
                 android:text=""
                 app:layout_constraintTop_toBottomOf="@+id/et_title"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <Spinner
+                android:id="@+id/sp_playback"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                app:layout_constraintTop_toBottomOf="@+id/et_interpret"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
 
             <EditText
                 android:id="@+id/et_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="1dp"
                 android:hint="Content"
-                android:layout_marginLeft="1dp"
                 android:ems="10"
-                android:gravity="start|top"
                 android:inputType="textMultiLine"
                 android:typeface="monospace"
-                app:layout_constraintTop_toBottomOf="@id/et_interpret"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintTop_toBottomOf="@id/sp_playback"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
 
             <Button
                 android:id="@+id/btn_add"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="72dp"
                 android:text="Ok"
