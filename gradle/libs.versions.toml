@@ -1,5 +1,9 @@
 [versions]
 agp = "8.10.1"
+converterGson = "3.0.0"
+kotlinxSerializationJson = "1.6.3"
+playServicesCronet = "18.1.0"
+retrofit = "3.0.0"
 spotifyAuthVersion = "2.1.0"
 gson = "2.11.0"
 kotlin = "2.0.21"
@@ -19,6 +23,11 @@ androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = 
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomVersion" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomVersion" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomVersion" }
+converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
+converter-kotlinx-serialization = { module = "com.squareup.retrofit2:converter-kotlinx-serialization", version.ref = "converterGson" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+play-services-cronet = { module = "com.google.android.gms:play-services-cronet", version.ref = "playServicesCronet" }
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 spotify-auth = { module = "com.spotify.android:auth", version.ref = "spotifyAuthVersion" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
