@@ -21,3 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "ChordMate"
 include(":app")
+include(":spotify")

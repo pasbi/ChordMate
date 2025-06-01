@@ -8,4 +8,6 @@
     <string name="previous">Previous</string>
     <string name="action_transpose_up_text">↑</string>
     <string name="action_transpose_down_text">↓</string>
+    <string name="SPOTIFY_CLIENT_ID">5b7998cd42ec4cf5b863bf73d1c2264d</string>
+    <string name="SPOTIFY_REDIRECT_URI">app://chordmate.pakab.de</string>
 </resources>
