@@ -18,7 +18,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        SpotifyControl.start(this)
+        SpotifyWebControl.start(this)
+        SpotifyRemoteControl.start(this)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
@@ -26,6 +27,8 @@ class MainActivity : AppCompatActivity() {
         val navController = supportFragmentManager.findFragmentById(R.id.fragment)!!.findNavController()
         setupActionBarWithNavController(navController)
         toolbar.setNavigationOnClickListener { navController.popBackStack() }
+
+        SpotifyWebControl.search(this)
     }
 
     override fun onActivityResult(
@@ -34,13 +37,13 @@ class MainActivity : AppCompatActivity() {
         data: Intent?,
     ) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == SpotifyControl.requestCode) {
-            SpotifyControl.onRequestReturns(this, resultCode, data)
+        if (requestCode == SpotifyRemoteControl.requestCode) {
+            SpotifyRemoteControl.onRequestReturns(this, resultCode, data)
         }
     }
 
     override fun onStop() {
         super.onStop()
-        SpotifyControl.stop()
+        SpotifyRemoteControl.stop()
     }
 }
