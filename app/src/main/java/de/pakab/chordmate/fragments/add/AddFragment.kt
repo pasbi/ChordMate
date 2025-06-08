@@ -18,7 +18,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navOptions
-import de.pakab.chordmate.M
+import de.pakab.chordmate.MySpinner
 import de.pakab.chordmate.R
 import de.pakab.chordmate.Track
 import de.pakab.chordmate.databinding.FragmentAddBinding
@@ -57,11 +57,12 @@ class AddFragmentMenuProvider(
 class AddFragment : Fragment() {
     private lateinit var mSongViewModel: SongViewModel
     private var _binding: FragmentAddBinding? = null
-    val binding get() = _binding!!
-    val args: AddFragmentArgs by navArgs()
-    var trackSpinnerAdapter: SpotifySpinnerAdapter? = null
-    var blockTrackSpinnerAdapterSearch = false
-    var blockNextSongMetaDataUpdate = false
+    private val binding get() = _binding!!
+    private val args: AddFragmentArgs by navArgs()
+    private var trackSpinnerAdapter: SpotifySpinnerAdapter? = null
+    private var blockTrackSpinnerAdapterSearch = false
+    private var blockNextSongMetaDataUpdate = false
+    private var initialSearch = true
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -93,9 +94,9 @@ class AddFragment : Fragment() {
         }
 
         _binding!!.spPlayback.adapter = trackSpinnerAdapter
-        _binding!!.spPlayback.listener =
-            object : M {
-                override fun f(position: Int) {
+        _binding!!.spPlayback.onItemSelectedListener =
+            object : MySpinner.OnItemSelectedEvenIfSameListener {
+                override fun onItemSelected(position: Int) {
                     if (blockNextSongMetaDataUpdate) {
                         blockNextSongMetaDataUpdate = false
                     } else {
@@ -140,7 +141,13 @@ class AddFragment : Fragment() {
         Log.i(TAG, "search: ${_binding!!.etTitle.text}, ${_binding!!.etInterpret.text}")
         trackSpinnerAdapter?.search(_binding!!.etTitle.text.toString(), _binding!!.etInterpret.text.toString()) {
             blockNextSongMetaDataUpdate = true
-            trackSpinnerAdapter!!.bestResultIndex()?.let { _binding!!.spPlayback.setSelection(it) }
+            if (initialSearch) {
+                initialSearch = false
+            } else {
+                trackSpinnerAdapter!!
+                    .bestSearchResultIndex()
+                    ?.let { _binding!!.spPlayback.setSelection(it) }
+            }
         }
     }
 

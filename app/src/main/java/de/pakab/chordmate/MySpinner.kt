@@ -7,14 +7,14 @@ class MySpinner(
     context: Context,
     attrs: AttributeSet,
 ) : androidx.appcompat.widget.AppCompatSpinner(context, attrs) {
-    interface OnItemSelectedEvenIfSame {
+    interface OnItemSelectedEvenIfSameListener {
         fun onItemSelected(position: Int)
     }
 
-    var onItemSelected: OnItemSelectedEvenIfSame? = null
+    var onItemSelectedListener: OnItemSelectedEvenIfSameListener? = null
 
     override fun setSelection(position: Int) {
         super.setSelection(position)
-        onItemSelected?.onItemSelected(position)
+        onItemSelectedListener?.onItemSelected(position)
     }
 }

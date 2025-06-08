@@ -37,6 +37,7 @@ class SpotifySpinnerAdapter(
     private var currentTrack: Track? = null
     private var candidateTracks: MutableList<Track> = ArrayList<Track>()
     private var searchCall: Call<SearchResponse>? = null
+    private var bestSearchResultIndex: Int? = null
 
     fun setCurrentTrackId(trackId: String?) {
         if (trackId == null) {
@@ -114,6 +115,17 @@ class SpotifySpinnerAdapter(
 
     fun update() {
         clear()
+        if (candidateTracks.isEmpty()) {
+            // no candidate tracks, so there is no search result and no best one.
+            bestSearchResultIndex = null
+        } else if (currentTrack == null || currentTrack?.id == candidateTracks[0].id) {
+            // there is no current track or current track is the best search result
+            bestSearchResultIndex = 0
+        } else {
+            // there is a current track and the current trac kis not the best search result
+            bestSearchResultIndex = 1
+        }
+
         if (currentTrack == null) {
             addAll(candidateTracks)
         } else {
@@ -160,14 +172,5 @@ class SpotifySpinnerAdapter(
         parent: ViewGroup,
     ): View? = getView(position, convertView, parent)
 
-    fun bestResultIndex(): Int? {
-        if (candidateTracks.isEmpty()) {
-            return null
-        }
-        return if (currentTrack == null) {
-            0
-        } else {
-            1
-        }
-    }
+    fun bestSearchResultIndex(): Int? = bestSearchResultIndex
 }
