@@ -55,6 +55,7 @@ class AddFragment : Fragment() {
     private var _binding: FragmentAddBinding? = null
     val binding get() = _binding!!
     val args: AddFragmentArgs by navArgs()
+    var trackSpinnerAdapter: SpotifySpinnerAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -65,6 +66,8 @@ class AddFragment : Fragment() {
         requireActivity().addMenuProvider(AddFragmentMenuProvider(this), viewLifecycleOwner, Lifecycle.State.RESUMED)
         val view = binding.root
 
+        trackSpinnerAdapter = SpotifySpinnerAdapter(requireContext())
+
         if (args.currentSong != null) {
             _binding!!.etTitle.setText(args.currentSong!!.title)
             _binding!!.etInterpret.setText(args.currentSong!!.interpret)
@@ -72,7 +75,7 @@ class AddFragment : Fragment() {
         }
 
         mSongViewModel = ViewModelProvider(this)[SongViewModel::class.java]
-        _binding!!.btnAdd.setOnClickListener {
+        _binding!!.fabOk.setOnClickListener {
             if (args.currentSong == null) {
                 insertDataToDatabase()
             } else {
@@ -112,6 +115,10 @@ class AddFragment : Fragment() {
         return view
     }
 
+    private fun updateTrackSpinner() {
+        trackSpinnerAdapter?.update(_binding!!.etTitle.text.toString(), _binding!!.etInterpret.text.toString())
+    }
+
     private fun insertDataToDatabase() {
         val title = _binding!!.etTitle.text.toString()
         val currentSong = Song(0, title, _binding!!.etInterpret!!.text.toString(), _binding!!.etContent!!.text.toString())
@@ -127,7 +134,7 @@ class AddFragment : Fragment() {
         args.currentSong!!.interpret = _binding!!.etInterpret.text.toString()
         args.currentSong!!.content = _binding!!.etContent.text.toString()
         mSongViewModel.updateSong(args.currentSong!!)
-        Log.v("FOO", "update song: ${args.currentSong!!.id}")
+        Log.v(TAG, "update song: ${args.currentSong!!.id}")
         val action = AddFragmentDirections.actionAddFragmentToSongFragment(args.currentSong!!)
         findNavController().navigate(action, navOptions { popUpTo(R.id.songFragment) })
     }

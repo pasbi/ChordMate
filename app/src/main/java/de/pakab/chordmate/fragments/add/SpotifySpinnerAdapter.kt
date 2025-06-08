@@ -92,7 +92,7 @@ class SpotifySpinnerAdapter(
                         .Builder(context)
                         .data(images[0].url)
                         .target(ImageViewTarget(view.findViewById<ImageView>(R.id.iv_track_album)))
-                        .scale(Scale.FILL)
+                        .scale(Scale.FIT)
                         .build(),
                 )
             }
