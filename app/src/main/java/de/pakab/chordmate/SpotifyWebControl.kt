@@ -4,6 +4,7 @@ import android.content.Context
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
+import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -27,13 +28,23 @@ object SpotifyWebControl {
     fun searchTrack(
         query: String,
         callback: Callback<SearchResponse>,
+    ): Call<SearchResponse> {
+        val call =
+            spotifyWebApi!!
+                .search(
+                    hashMapOf(
+                        "query" to query,
+                        "type" to "track",
+                    ),
+                )
+        call.enqueue(callback)
+        return call
+    }
+
+    fun track(
+        id: String,
+        callback: Callback<Track>,
     ) {
-        spotifyWebApi!!
-            .search(
-                hashMapOf(
-                    "query" to query,
-                    "type" to "track",
-                ),
-            ).enqueue(callback)
+        spotifyWebApi!!.track(id).enqueue(callback)
     }
 }

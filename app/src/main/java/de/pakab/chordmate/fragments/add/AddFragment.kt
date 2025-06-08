@@ -18,12 +18,16 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navOptions
+import de.pakab.chordmate.M
 import de.pakab.chordmate.R
+import de.pakab.chordmate.Track
 import de.pakab.chordmate.databinding.FragmentAddBinding
 import de.pakab.chordmate.model.Song
 import de.pakab.chordmate.transpose
 import de.pakab.chordmate.viewmodel.SongViewModel
 import kotlin.getValue
+
+private const val TAG = "AddFragment"
 
 class AddFragmentMenuProvider(
     val fragment: AddFragment,
@@ -56,6 +60,8 @@ class AddFragment : Fragment() {
     val binding get() = _binding!!
     val args: AddFragmentArgs by navArgs()
     var trackSpinnerAdapter: SpotifySpinnerAdapter? = null
+    var blockTrackSpinnerAdapterSearch = false
+    var blockNextSongMetaDataUpdate = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -66,13 +72,16 @@ class AddFragment : Fragment() {
         requireActivity().addMenuProvider(AddFragmentMenuProvider(this), viewLifecycleOwner, Lifecycle.State.RESUMED)
         val view = binding.root
 
-        trackSpinnerAdapter = SpotifySpinnerAdapter(requireContext())
+        trackSpinnerAdapter =
+            SpotifySpinnerAdapter(requireContext())
 
         if (args.currentSong != null) {
             _binding!!.etTitle.setText(args.currentSong!!.title)
             _binding!!.etInterpret.setText(args.currentSong!!.interpret)
             _binding!!.etContent.setText(args.currentSong!!.content)
+            trackSpinnerAdapter?.setCurrentTrackId(args.currentSong?.trackId)
         }
+        updateTrackSpinnerCandidates()
 
         mSongViewModel = ViewModelProvider(this)[SongViewModel::class.java]
         _binding!!.fabOk.setOnClickListener {
@@ -83,8 +92,18 @@ class AddFragment : Fragment() {
             }
         }
 
-        val spinnerAdapter = SpotifySpinnerAdapter(requireContext())
-        _binding!!.spPlayback.adapter = spinnerAdapter
+        _binding!!.spPlayback.adapter = trackSpinnerAdapter
+        _binding!!.spPlayback.listener =
+            object : M {
+                override fun f(position: Int) {
+                    if (blockNextSongMetaDataUpdate) {
+                        blockNextSongMetaDataUpdate = false
+                    } else {
+                        updateSongMetaData()
+                    }
+                }
+            }
+
         val playbackSearchUpdater =
             object : TextWatcher {
                 override fun beforeTextChanged(
@@ -106,7 +125,9 @@ class AddFragment : Fragment() {
                 }
 
                 override fun afterTextChanged(s: Editable?) {
-                    spinnerAdapter.update(_binding!!.etTitle.text.toString(), _binding!!.etInterpret.text.toString())
+                    if (!blockTrackSpinnerAdapterSearch) {
+                        updateTrackSpinnerCandidates()
+                    }
                 }
             }
         _binding!!.etTitle.addTextChangedListener(playbackSearchUpdater)
@@ -115,8 +136,12 @@ class AddFragment : Fragment() {
         return view
     }
 
-    private fun updateTrackSpinner() {
-        trackSpinnerAdapter?.update(_binding!!.etTitle.text.toString(), _binding!!.etInterpret.text.toString())
+    private fun updateTrackSpinnerCandidates() {
+        Log.i(TAG, "search: ${_binding!!.etTitle.text}, ${_binding!!.etInterpret.text}")
+        trackSpinnerAdapter?.search(_binding!!.etTitle.text.toString(), _binding!!.etInterpret.text.toString()) {
+            blockNextSongMetaDataUpdate = true
+            trackSpinnerAdapter!!.bestResultIndex()?.let { _binding!!.spPlayback.setSelection(it) }
+        }
     }
 
     private fun insertDataToDatabase() {
@@ -133,6 +158,7 @@ class AddFragment : Fragment() {
         args.currentSong!!.title = _binding!!.etTitle.text.toString()
         args.currentSong!!.interpret = _binding!!.etInterpret.text.toString()
         args.currentSong!!.content = _binding!!.etContent.text.toString()
+        args.currentSong!!.trackId = (_binding!!.spPlayback.selectedItem as Track).id
         mSongViewModel.updateSong(args.currentSong!!)
         Log.v(TAG, "update song: ${args.currentSong!!.id}")
         val action = AddFragmentDirections.actionAddFragmentToSongFragment(args.currentSong!!)
@@ -144,4 +170,12 @@ class AddFragment : Fragment() {
     }
 
     fun content(): String = _binding?.etContent?.text.toString()
+
+    private fun updateSongMetaData() {
+        val track = (_binding!!.spPlayback.selectedItem as Track)
+        blockTrackSpinnerAdapterSearch = true
+        _binding?.etTitle?.setText(track.name)
+        _binding?.etInterpret?.setText(track.artists.joinToString(", ") { it -> it.name })
+        blockTrackSpinnerAdapterSearch = false
+    }
 }

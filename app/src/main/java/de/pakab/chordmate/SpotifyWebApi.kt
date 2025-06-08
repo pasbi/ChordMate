@@ -8,6 +8,7 @@ import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.POST
+import retrofit2.http.Path
 import retrofit2.http.QueryMap
 import kotlin.collections.joinToString
 
@@ -80,4 +81,10 @@ interface SpotifyWebApi {
     fun search(
         @QueryMap query: HashMap<String, String>,
     ): Call<SearchResponse>
+
+    @Headers("Content-Type: application/x-www-form-urlencoded")
+    @GET("tracks/{id}")
+    fun track(
+        @Path("id") id: String,
+    ): Call<Track>
 }
