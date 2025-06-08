@@ -22,7 +22,7 @@ import de.pakab.chordmate.viewmodel.SongViewModel
 
 class ListFragment : Fragment() {
     private var _binding: FragmentListBinding? = null
-    public val binding get() = _binding!!
+    val binding get() = _binding!!
     private lateinit var mSongsViewModel: SongViewModel
 
     override fun onCreateView(

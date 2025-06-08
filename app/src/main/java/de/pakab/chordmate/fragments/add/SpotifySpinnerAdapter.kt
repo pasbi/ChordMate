@@ -24,16 +24,6 @@ import retrofit2.Response
 
 const val TAG = "SpotifySpinnerAdapter"
 
-class TrackDisplay(
-    context: Context,
-    imageLoader: ImageLoader,
-    track: Track,
-) {
-    init {
-        Log.i(TAG, "Track Display")
-    }
-}
-
 class SpotifySpinnerAdapter(
     context: Context,
 ) : ArrayAdapter<Track>(context, R.layout.track_item) {
@@ -93,7 +83,7 @@ class SpotifySpinnerAdapter(
         val track = getItem(position)
         if (track != null) {
             view.findViewById<TextView>(R.id.tv_track_title)?.text = track.name
-            view.findViewById<TextView>(R.id.tv_track_interpret)?.text = track.artists?.joinToString(", ") { it.name } ?: ""
+            view.findViewById<TextView>(R.id.tv_track_interpret)?.text = track.artists.joinToString(", ") { it.name }
             view.findViewById<TextView>(R.id.tv_track_album)?.text = track.album.name
             val images = track.album.images
             if (images.isNotEmpty()) {
@@ -114,31 +104,5 @@ class SpotifySpinnerAdapter(
         position: Int,
         convertView: View?,
         parent: ViewGroup,
-    ): View? {
-        val view =
-            if (convertView == null) {
-                val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-                inflater.inflate(R.layout.track_item, null)
-            } else {
-                convertView
-            }
-        val track = getItem(position)
-        if (track != null) {
-            view.findViewById<TextView>(R.id.tv_track_title)?.text = track.name
-            view.findViewById<TextView>(R.id.tv_track_interpret)?.text = track.artists.joinToString(", ") { it.name }
-            view.findViewById<TextView>(R.id.tv_track_album)?.text = track.album.name
-            val images = track.album.images
-            if (images.isNotEmpty()) {
-                imageLoader.enqueue(
-                    ImageRequest
-                        .Builder(context)
-                        .data(images[0].url)
-                        .target(ImageViewTarget(view.findViewById<ImageView>(R.id.iv_track_album)))
-                        .scale(Scale.FILL)
-                        .build(),
-                )
-            }
-        }
-        return view
-    }
+    ): View? = getView(position, convertView, parent)
 }

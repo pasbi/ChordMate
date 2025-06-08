@@ -12,4 +12,10 @@
     <string name="SPOTIFY_REDIRECT_URI">app://chordmate.pakab.de</string>
     <string name="connected_to_spotify">Connected to Spotify.</string>
     <string name="failed_to_connect_to_spotify">Failed to connect to spotify.</string>
+    <string name="interpret_hint">Interpret</string>
+    <string name="title_hint">Title</string>
+    <string name="content_hint">Content</string>
+    <string name="ok_text">Ok</string>
+    <string name="add_song_fab_content_description">Add a new song.</string>
+    <string name="title_activity_main2">MainActivity2</string>
 </resources>
