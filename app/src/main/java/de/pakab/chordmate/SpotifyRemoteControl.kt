@@ -6,6 +6,7 @@ import android.util.Log
 import android.widget.Toast
 import com.spotify.android.appremote.api.ConnectionParams
 import com.spotify.android.appremote.api.Connector
+import com.spotify.android.appremote.api.PlayerApi
 import com.spotify.android.appremote.api.SpotifyAppRemote
 import com.spotify.sdk.android.auth.AuthorizationClient
 import com.spotify.sdk.android.auth.AuthorizationRequest
@@ -84,4 +85,6 @@ object SpotifyRemoteControl {
             SpotifyAppRemote.disconnect(it)
         }
     }
+
+    fun playerApi(): PlayerApi? = spotifyAppRemote?.playerApi
 }
