@@ -153,7 +153,7 @@ class AddFragment : Fragment() {
 
     private fun insertDataToDatabase() {
         val title = _binding!!.etTitle.text.toString()
-        val currentSong = Song(0, title, _binding!!.etInterpret!!.text.toString(), _binding!!.etContent!!.text.toString())
+        val currentSong = Song(0, title, _binding!!.etInterpret.text.toString(), _binding!!.etContent.text.toString())
         mSongViewModel.addSong(currentSong)
         Toast.makeText(requireContext(), "Added Song $title to database.", Toast.LENGTH_LONG).show()
 
