@@ -90,7 +90,11 @@ class AddFragment : Fragment() {
             if (args.currentSong == null) {
                 insertDataToDatabase()
             } else {
-                updateCurrentSong()
+                updateSong(args.currentSong!!)
+                mSongViewModel.updateSong(args.currentSong!!)
+                Log.v(TAG, "update song: ${args.currentSong!!.id}")
+                val action = AddFragmentDirections.actionAddFragmentToSongFragment(args.currentSong!!)
+                findNavController().navigate(action, navOptions { popUpTo(R.id.songFragment) })
             }
         }
 
@@ -154,7 +158,8 @@ class AddFragment : Fragment() {
 
     private fun insertDataToDatabase() {
         val title = _binding!!.etTitle.text.toString()
-        val currentSong = Song(0, title, _binding!!.etInterpret.text.toString(), _binding!!.etContent.text.toString())
+        val currentSong = Song()
+        updateSong(currentSong)
         mSongViewModel.addSong(currentSong)
         Toast.makeText(requireContext(), "Added Song $title to database.", Toast.LENGTH_LONG).show()
 
@@ -162,15 +167,11 @@ class AddFragment : Fragment() {
         findNavController().navigate(action, navOptions { popUpTo(R.id.listFragment) })
     }
 
-    private fun updateCurrentSong() {
-        args.currentSong!!.title = _binding!!.etTitle.text.toString()
-        args.currentSong!!.interpret = _binding!!.etInterpret.text.toString()
-        args.currentSong!!.content = _binding!!.etContent.text.toString()
-        args.currentSong!!.trackId = (_binding!!.spPlayback.selectedItem as Track).id
-        mSongViewModel.updateSong(args.currentSong!!)
-        Log.v(TAG, "update song: ${args.currentSong!!.id}")
-        val action = AddFragmentDirections.actionAddFragmentToSongFragment(args.currentSong!!)
-        findNavController().navigate(action, navOptions { popUpTo(R.id.songFragment) })
+    private fun updateSong(song: Song) {
+        song.title = _binding!!.etTitle.text.toString()
+        song.interpret = _binding!!.etInterpret.text.toString()
+        song.content = _binding!!.etContent.text.toString()
+        song.trackId = (_binding!!.spPlayback.selectedItem as Track).id
     }
 
     fun setContent(text: String) {
