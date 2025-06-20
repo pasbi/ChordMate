@@ -1,5 +1,6 @@
 package de.pakab.chordmate.fragments.add
 
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -23,7 +24,6 @@ import de.pakab.chordmate.R
 import de.pakab.chordmate.Track
 import de.pakab.chordmate.databinding.FragmentAddBinding
 import de.pakab.chordmate.model.Song
-import de.pakab.chordmate.transpose
 import de.pakab.chordmate.viewmodel.SongViewModel
 import kotlin.getValue
 
@@ -31,6 +31,7 @@ private const val TAG = "AddFragment"
 
 class AddFragmentMenuProvider(
     val fragment: AddFragment,
+    val context: Context,
 ) : MenuProvider {
     override fun onCreateMenu(
         menu: Menu,
@@ -43,11 +44,11 @@ class AddFragmentMenuProvider(
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean =
         when (menuItem.itemId) {
             R.id.action_transpose_up -> {
-                fragment.setContent(transpose(fragment.content(), 1))
+                Toast.makeText(context, "Transpose up is not yet implemented.", Toast.LENGTH_SHORT).show()
                 true
             }
             R.id.action_transpose_down -> {
-                fragment.setContent(transpose(fragment.content(), -1))
+                Toast.makeText(context, "Transpose down is not yet implemented.", Toast.LENGTH_SHORT).show()
                 true
             }
             else -> false
@@ -70,7 +71,7 @@ class AddFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View? {
         _binding = FragmentAddBinding.inflate(inflater, container, false)
-        requireActivity().addMenuProvider(AddFragmentMenuProvider(this), viewLifecycleOwner, Lifecycle.State.RESUMED)
+        requireActivity().addMenuProvider(AddFragmentMenuProvider(this, requireContext()), viewLifecycleOwner, Lifecycle.State.RESUMED)
         val view = binding.root
 
         trackSpinnerAdapter =

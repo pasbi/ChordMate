@@ -20,7 +20,6 @@ import androidx.navigation.fragment.navArgs
 import de.pakab.chordmate.R
 import de.pakab.chordmate.SpotifyRemoteControl
 import de.pakab.chordmate.databinding.FragmentSongBinding
-import de.pakab.chordmate.transpose
 import de.pakab.chordmate.viewmodel.SongViewModel
 import java.util.Timer
 import kotlin.concurrent.timerTask
@@ -82,7 +81,7 @@ class SongFragment : Fragment() {
         val view = binding.root
         val toolbar = (activity as AppCompatActivity).supportActionBar!!
         toolbar.title = "${args.currentSong.title} – ${args.currentSong.interpret}"
-        _binding!!.tvSongContent.text = transpose(args.currentSong.content.orEmpty(), args.currentSong.transposing)
+        _binding!!.tvSongContent.text = args.currentSong.content.orEmpty()
         requireActivity().addMenuProvider(SongFragmentMenuProvider(this), viewLifecycleOwner, Lifecycle.State.RESUMED)
         _binding!!.btnPlayPause.setOnClickListener {
             val trackId = args.currentSong.trackId
