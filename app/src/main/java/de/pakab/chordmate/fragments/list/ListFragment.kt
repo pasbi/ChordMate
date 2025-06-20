@@ -14,6 +14,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import de.pakab.chordmate.AppDatabase
 import de.pakab.chordmate.R
 import de.pakab.chordmate.SongsAdapter
 import de.pakab.chordmate.databinding.FragmentListBinding
@@ -64,6 +65,14 @@ class ListFragment : Fragment() {
                     if (menuItem.itemId == R.id.action_settings) {
                         Toast.makeText(requireContext(), "Settings!", Toast.LENGTH_SHORT).show()
                         return true
+                    }
+                    if (menuItem.itemId == R.id.action_backup) {
+                        val context = requireContext()
+                        AppDatabase.getDatabase(context).backup(context)
+                    }
+                    if (menuItem.itemId == R.id.action_restore) {
+                        val context = requireContext()
+                        AppDatabase.getDatabase(context).restore(context, true)
                     }
                     return false
                 }

@@ -7,4 +7,14 @@
         android:orderInCategory="100"
         android:title="@string/action_settings"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/action_backup"
+        android:orderInCategory="100"
+        android:title="@string/backup_action_label"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_restore"
+        android:orderInCategory="100"
+        android:title="@string/restore_action_label"
+        app:showAsAction="never" />
 </menu>

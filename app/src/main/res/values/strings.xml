@@ -18,4 +18,6 @@
     <string name="ok_text">Ok</string>
     <string name="add_song_fab_content_description">Add a new song.</string>
     <string name="title_activity_main2">MainActivity2</string>
+    <string name="restore_action_label">Restore</string>
+    <string name="backup_action_label">Backup</string>
 </resources>
