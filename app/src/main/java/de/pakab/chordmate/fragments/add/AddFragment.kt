@@ -1,5 +1,6 @@
 package de.pakab.chordmate.fragments.add
 
+import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
 import android.text.Editable
@@ -12,6 +13,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -51,6 +53,23 @@ class AddFragmentMenuProvider(
                 Toast.makeText(context, "Transpose down is not yet implemented.", Toast.LENGTH_SHORT).show()
                 true
             }
+            R.id.action_paste -> {
+                var clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                if (clipboard.primaryClipDescription == null) {
+                    Toast.makeText(context, "no primary clip", Toast.LENGTH_SHORT).show()
+                } else {
+                    val n = clipboard.primaryClipDescription!!.mimeTypeCount
+                    val html = clipboard.primaryClip?.getItemAt(0)?.htmlText
+                    val stripped = html?.replace(Regex("<.*?>"), "")
+                    fragment.binding.etContent.setText(stripped)
+                    var s = "MimeTypes: $n"
+                    for (i in 0 until n) {
+                        s += "\n" + clipboard.primaryClipDescription?.getMimeType(i).toString()
+                    }
+                    Toast.makeText(context, s, Toast.LENGTH_SHORT).show()
+                }
+                true
+            }
             else -> false
         }
 }
@@ -58,7 +77,7 @@ class AddFragmentMenuProvider(
 class AddFragment : Fragment() {
     private lateinit var mSongViewModel: SongViewModel
     private var _binding: FragmentAddBinding? = null
-    private val binding get() = _binding!!
+    val binding get() = _binding!!
     private val args: AddFragmentArgs by navArgs()
     private var trackSpinnerAdapter: SpotifySpinnerAdapter? = null
     private var blockTrackSpinnerAdapterSearch = false

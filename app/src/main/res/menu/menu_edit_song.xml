@@ -13,4 +13,9 @@
         android:orderInCategory="100"
         android:title="@string/action_transpose_down_text"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/action_paste"
+        android:orderInCategory="100"
+        android:title="@string/paste"
+        app:showAsAction="never" />
 </menu>

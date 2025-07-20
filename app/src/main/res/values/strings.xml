@@ -20,4 +20,5 @@
     <string name="title_activity_main2">MainActivity2</string>
     <string name="restore_action_label">Restore</string>
     <string name="backup_action_label">Backup</string>
+    <string name="paste">paste</string>
 </resources>
