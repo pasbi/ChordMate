@@ -1,6 +1,7 @@
 package de.pakab.chordmate.fragments
 
 import android.os.Bundle
+import android.text.method.ScrollingMovementMethod
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
@@ -83,6 +84,7 @@ class SongFragment : Fragment() {
         toolbar.title = "${args.currentSong.title} – ${args.currentSong.interpret}"
         _binding!!.tvSongContent.text = args.currentSong.content.orEmpty()
         requireActivity().addMenuProvider(SongFragmentMenuProvider(this), viewLifecycleOwner, Lifecycle.State.RESUMED)
+        _binding!!.tvSongContent.movementMethod = ScrollingMovementMethod()
         _binding!!.btnPlayPause.setOnClickListener {
             val trackId = args.currentSong.trackId
             if (trackId != null) {

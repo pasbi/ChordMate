@@ -5,25 +5,27 @@
     android:id="@+id/frameLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.SongFragment">
+    tools:context=".fragments.SongFragment"
+    android:fitsSystemWindows="true">
 
-    <ScrollView
-        android:id="@+id/scroll_view"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/btnPlayPause"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/bottom_controls_barrier"
+        app:barrierDirection="top"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="btnPlayPause,seek_bar" />
 
-        <TextView
-            android:id="@+id/tv_song_content"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="a\nb\nc\nd\ne\nf"
-            android:typeface="monospace" />
-    </ScrollView>
+
+    <TextView
+    android:id="@+id/tv_song_content"
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:scrollbars="vertical"
+    android:text="Very long text..."
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintBottom_toTopOf="@id/btnPlayPause"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
         android:id="@+id/btnPlayPause"
@@ -37,7 +39,7 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/scroll_view" />
+        app:layout_constraintTop_toBottomOf="@id/tv_song_content" />
 
     <TextView
         android:id="@+id/tv_position"
