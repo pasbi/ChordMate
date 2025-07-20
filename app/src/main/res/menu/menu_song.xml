@@ -10,4 +10,31 @@ tools:context="de.pakab.chordmate.MainActivity">
     android:id="@+id/action_edit_song"
     android:title="Edit"
     app:showAsAction="never" />
+<item
+    android:id="@+id/action_mode"
+    android:title="Mode"
+    app:showAsAction="never">
+    <menu>
+        <group android:checkableBehavior="single">
+            <item
+                android:id="@+id/action_mode_play"
+                android:title="Play"
+                android:checkable="true" />
+            <item
+                android:id="@+id/action_mode_scroll"
+                android:title="Scroll"
+                android:checkable="true" />
+            <item
+                android:id="@+id/action_mode_both"
+                android:title="Both"
+                android:checkable="true" />
+        </group>
+    </menu>
+</item>
+<item
+    android:id="@+id/action_adj_speed"
+    android:title="Adj. Speed"
+    android:checkable="true"
+    app:showAsAction="never" />
+
 </menu>
