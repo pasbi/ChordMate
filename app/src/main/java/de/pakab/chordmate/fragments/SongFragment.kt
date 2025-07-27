@@ -1,6 +1,6 @@
 package de.pakab.chordmate.fragments
 
-import android.animation.ValueAnimator
+import android.os.Build
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
 import android.util.Log
@@ -11,7 +11,6 @@ import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.LinearInterpolator
 import android.widget.SeekBar
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
@@ -24,11 +23,13 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import de.pakab.chordmate.R
+import de.pakab.chordmate.ScrollController
 import de.pakab.chordmate.SpotifyRemoteControl
 import de.pakab.chordmate.databinding.FragmentSongBinding
 import de.pakab.chordmate.viewmodel.SongViewModel
 import java.util.Timer
 import kotlin.concurrent.timerTask
+import kotlin.math.exp
 import kotlin.time.Duration.Companion.milliseconds
 
 private const val TAG = "SongFragment"
@@ -82,8 +83,9 @@ class SongFragment : Fragment() {
     val args: SongFragmentArgs by navArgs()
     val positionTracker = SpotifyPlaybackPositionTracker()
     var blockSeekBarUpdates = false
-    private var scrollAnimator: ValueAnimator? = null
+    private lateinit var scrollController: ScrollController
     var isPlaying: Boolean = false
+    var scrollInterrupted = false
 
     fun showDeleteSongDialog() {
         AlertDialog
@@ -102,6 +104,7 @@ class SongFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View? {
         _binding = FragmentSongBinding.inflate(inflater, container, false)
+        scrollController = ScrollController(_binding!!.tvSongContent)
         val view = binding.root
         val toolbar = (activity as AppCompatActivity).supportActionBar!!
         toolbar.title = "${args.currentSong.title} – ${args.currentSong.interpret}"
@@ -112,17 +115,17 @@ class SongFragment : Fragment() {
         _binding!!.btnPlayPause.setOnClickListener {
             if (isPlaying) {
                 isPlaying = false
-                _binding!!.btnPlayPause.text = "▶"
                 SpotifyRemoteControl.playerApi()?.pause()
-                pauseAutoScroll()
+                scrollController.stop()
             } else {
                 isPlaying = true
-                _binding!!.btnPlayPause.text = "⏸"
                 val menu = menuProvider.menu
                 val both = menu?.findItem(R.id.action_mode_both)?.isChecked == true
                 val scroll = menu?.findItem(R.id.action_mode_scroll)?.isChecked == true
                 val play = menu?.findItem(R.id.action_mode_play)?.isChecked == true
-                if (scroll || both) resumeAutoScroll()
+                if (scroll || both) {
+                    scrollController.start()
+                }
                 if (play || both) {
                     args.currentSong.trackId?.let {
                         Log.i(TAG, "Play $it")
@@ -132,7 +135,9 @@ class SongFragment : Fragment() {
                     }
                 }
             }
+            updatePlayPauseButton()
         }
+        updatePlayPauseButton()
         SpotifyRemoteControl.playerApi()!!.subscribeToPlayerState()!!.setEventCallback { event ->
             _binding!!.seekBar.max = event!!.track.duration.toInt()
             if (event.isPaused) {
@@ -141,7 +146,6 @@ class SongFragment : Fragment() {
                 positionTracker.start { if (!blockSeekBarUpdates) _binding!!.seekBar.progress = it.toInt() }
             }
         }
-
         _binding!!.seekBar.setOnSeekBarChangeListener(
             object : SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(
@@ -166,6 +170,30 @@ class SongFragment : Fragment() {
             },
         )
 
+        _binding!!.sbScrollSpeed.setOnSeekBarChangeListener(
+            object : SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(
+                    seekBar: SeekBar?,
+                    progress: Int,
+                    fromUser: Boolean,
+                ) {
+                    val sb = _binding!!.sbScrollSpeed
+                    val min = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) sb.min else 0
+                    val p = (sb.progress - min).toDouble() / (sb.max - min).toDouble()
+
+                    val minExp = -7.0
+                    val maxExp = -3.0
+                    scrollController.linesPerSecond = exp((maxExp - minExp) * p + minExp)
+                }
+
+                override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                }
+
+                override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                }
+            },
+        )
+
         initTextViewSongContent(view)
 
         return view
@@ -174,16 +202,21 @@ class SongFragment : Fragment() {
     private fun initTextViewSongContent(view: ConstraintLayout) {
         val textView = view.findViewById<TextView>(R.id.tv_song_content)!!
         textView.movementMethod = ScrollingMovementMethod()
-        textView.viewTreeObserver.addOnGlobalLayoutListener {
-            startSmoothAutoScroll()
-        }
 
         // Pause on touch
         textView.setOnTouchListener { _, event ->
             when (event.action) {
-                MotionEvent.ACTION_DOWN -> pauseAutoScroll()
+                MotionEvent.ACTION_DOWN -> {
+                    if (scrollController.running) {
+                        scrollInterrupted = true
+                        scrollController.stop()
+                    }
+                }
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                    resumeAutoScroll()
+                    if (scrollInterrupted) {
+                        scrollController.start()
+                        scrollInterrupted = false
+                    }
                     view.performClick()
                 }
             }
@@ -209,51 +242,16 @@ class SongFragment : Fragment() {
             }
     }
 
-    private fun startSmoothAutoScroll() {
-        if (_binding == null || scrollAnimator != null) {
-            return
-        }
-        val textView = _binding!!.tvSongContent
-        val linesPerSecond = 3
-        val totalHeight = textView.layout.height
-        val visibleHeight = textView.height
-        val maxScrollY = totalHeight - visibleHeight
-
-        if (maxScrollY <= 0) return // No scrolling needed
-
-        val lineHeight = textView.lineHeight
-        val scrollSpeedPxPerSec = linesPerSecond * lineHeight
-
-        val durationMs = (maxScrollY / scrollSpeedPxPerSec * 1000).toLong()
-
-        scrollAnimator =
-            ValueAnimator.ofInt(0, maxScrollY).apply {
-                duration = durationMs
-                interpolator = LinearInterpolator()
-                addUpdateListener { animation ->
-                    val scrollY = animation.animatedValue as Int
-                    textView.scrollTo(0, scrollY)
-                }
-            }
-    }
-
-    private fun pauseAutoScroll() {
-        scrollAnimator?.pause()
-    }
-
-    private fun resumeAutoScroll() {
-        if (scrollAnimator == null) {
-            return
-        }
-        if (scrollAnimator!!.isStarted) {
-            scrollAnimator!!.resume()
-        } else {
-            scrollAnimator!!.start()
-        }
-    }
-
     override fun onDestroy() {
         super.onDestroy()
-        scrollAnimator?.cancel()
+        scrollController.stop()
+    }
+
+    fun updatePlayPauseButton() {
+        if (isPlaying) {
+            _binding!!.btnPlayPause.text = "⏸"
+        } else {
+            _binding!!.btnPlayPause.text = "▶"
+        }
     }
 }
